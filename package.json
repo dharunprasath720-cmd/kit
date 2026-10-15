@@ -1,0 +1,53 @@
+{
+  "name": "pixel-cat",
+  "version": "1.0.0",
+  "description": "A cute pixel-cat desktop companion for Windows and macOS",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "icons": "node tools/make-icons.js",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^44.7.2",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "uiohook-napi": "^1.5.5"
+  },
+  "build": {
+    "appId": "com.pixelcat.companion",
+    "productName": "Pixel Cat",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**",
+      "settings/**",
+      "assets/**",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/uiohook-napi/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "kit.exe"
+    }
+  }
+}

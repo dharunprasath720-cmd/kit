@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pixel Cat Settings</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <style>
+    :root {
+      --bg: #1b1b22; --card: #25252f; --line: #3a3a48; --text: #ececf3; --muted: #9a9ab0;
+      --accent: #f0983a; --accent-ink: #2b1b10;
+    }
+    @media (prefers-color-scheme: light) {
+      :root { --bg: #f4f1ec; --card: #fff; --line: #ddd6cc; --text: #2a2623; --muted: #7a726a; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.4 "Segoe UI", system-ui, sans-serif; }
+    header { position: sticky; top: 0; z-index: 2; padding: 14px 18px; background: var(--bg);
+             border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+    header h1 { font-size: 16px; margin: 0; flex: 1; }
+    main { padding: 14px 18px 40px; display: grid; gap: 14px; }
+    section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+    h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
+    .row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+    .row > label:first-child, .row > .name { flex: 1; }
+    .hint { color: var(--muted); font-size: 12px; margin: 2px 0 6px; }
+    input[type=range] { width: 160px; accent-color: var(--accent); }
+    input[type=number], input[type=text], select, textarea {
+      background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit;
+    }
+    input[type=number] { width: 80px; }
+    input[type=text] { width: 190px; }
+    textarea { width: 100%; min-height: 110px; resize: vertical; }
+    input[type=color] { width: 40px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; }
+    input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); }
+    output { min-width: 44px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+    button { font: inherit; border: 1px solid var(--line); background: var(--bg); color: var(--text);
+             border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+    button:hover { border-color: var(--accent); }
+    .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .preset { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); }
+    .coats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+    .coat { padding: 10px 6px; text-align: center; }
+    .coat.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+    .coat .swatch { width: 30px; height: 30px; border-radius: 50%; margin: 0 auto 6px; border: 3px solid; }
+    .welcome { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none; align-items: center; justify-content: center; z-index: 10; }
+    .welcome.show { display: flex; }
+    .welcome .box { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; width: 330px; text-align: center; }
+    .welcome h2 { font-size: 18px; text-transform: none; letter-spacing: 0; color: var(--text); }
+    .welcome input { width: 100%; margin: 10px 0 14px; text-align: center; font-size: 16px; }
+    .timer-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); }
+    .timer-row .name { flex: 1; }
+    .timer-row .left { font-variant-numeric: tabular-nums; color: var(--accent); }
+    .chip { display: inline-flex; align-items: center; gap: 4px; }
+    .chip .x { opacity: .6; padding: 0 2px; cursor: pointer; }
+    .grid-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pixel Cat Settings</h1>
+    <button id="reset">Reset all</button>
+  </header>
+  <main>
+    <section>
+      <h2>Look</h2>
+      <div class="coats" id="coats"></div>
+      <div class="row">
+        <label for="name">Cat name (shows on hover)</label>
+        <input id="name" type="text" maxlength="14" data-key="name" placeholder="e.g. MOCHI">
+      </div>
+      <div class="row">
+        <label for="scale">Size</label>
+        <input id="scale" type="range" min="2" max="6" step="0.1" data-key="scale">
+        <output data-out="scale"></output>
+      </div>
+    </section>
+
+    <section>
+      <h2>Lock in place</h2>
+      <p class="hint">When locked, the cat strolls slowly to the spot and stays there. It never jumps.</p>
+      <div class="row"><label for="lock">Lock the cat</label><input id="lock" type="checkbox" data-key="lock.enabled"></div>
+      <div class="row">
+        <label for="spot">Spot</label>
+        <select id="spot" data-key="lock.spot">
+          <option value="bottom-right">Bottom right</option>
+          <option value="bottom-left">Bottom left</option>
+          <option value="top-right">Top right</option>
+          <option value="top-left">Top left</option>
+          <option value="custom">Saved position</option>
+        </select>
+      </div>
+      <div class="row">
+        <span class="name">Use where the cat is right now</span>
+        <button data-action="spot-here">Save spot</button>
+      </div>
+      <div class="row">
+        <label for="walk">Walking speed</label>
+        <input id="walk" type="range" min="30" max="300" step="5" data-key="lock.walkSpeed">
+        <output data-out="lock.walkSpeed"></output>
+      </div>
+      <p class="hint" id="hotkey-hint"></p>
+    </section>
+
+    <section>
+      <h2>Behaviour</h2>
+      <div class="row"><label for="follow">Follow my cursor</label><input id="follow" type="checkbox" data-key="follow"></div>
+      <div class="row">
+        <label for="fdist">Follow distance</label>
+        <input id="fdist" type="range" min="20" max="60" step="1" data-key="followDistance">
+        <output data-out="followDistance"></output>
+      </div>
+      <div class="row">
+        <label for="fspeed">Chase speed</label>
+        <input id="fspeed" type="range" min="100" max="1500" step="50" data-key="followSpeed">
+        <output data-out="followSpeed"></output>
+      </div>
+      <div class="row"><label for="typing">React when I type</label><input id="typing" type="checkbox" data-key="reactToTyping"></div>
+      <div class="row"><label for="pet">Purr and hearts when clicked</label><input id="pet" type="checkbox" data-key="petReactions"></div>
+      <div class="row">
+        <label for="sleep">Nap after idle (seconds)</label>
+        <input id="sleep" type="number" min="10" max="3600" data-key="sleepAfter">
+      </div>
+    </section>
+
+    <section>
+      <h2>Focus timers</h2>
+      <p class="hint">Start a timer and the cat wishes you luck. When it ends, it jumps and purrs.</p>
+      <div class="row">
+        <input id="t-label" type="text" maxlength="14" placeholder="Label (optional)" style="flex:1;width:auto">
+        <input id="t-min" type="number" min="0.1" step="1" value="25"> <span class="hint">min</span>
+        <button id="t-start">Start</button>
+      </div>
+      <div class="presets" id="t-presets"></div>
+      <div class="grid-btns"><button id="t-save">Save as preset</button></div>
+      <div id="t-active"></div>
+    </section>
+
+    <section>
+      <h2>Stretch reminders</h2>
+      <div class="row">
+        <label for="mins">Every (minutes, 0 = off)</label>
+        <input id="mins" type="number" min="0" max="480" data-key="stretchMinutes">
+      </div>
+      <p class="hint">Tips the cat shows, one per line (it picks randomly):</p>
+      <textarea id="tips" data-key="tips" spellcheck="false"></textarea>
+      <div class="grid-btns"><button data-action="stretch-now">Preview now</button></div>
+    </section>
+
+    <section>
+      <h2>System</h2>
+      <div class="row"><label for="top">Always on top</label><input id="top" type="checkbox" data-key="alwaysOnTop"></div>
+      <div class="row"><label for="login">Start at login</label><input id="login" type="checkbox" data-key="login"></div>
+      <div class="row">
+        <label for="hotkey">Hotkey to lock / unlock</label>
+        <input id="hotkey" type="text" data-key="hotkey" placeholder="CommandOrControl+Alt+L">
+      </div>
+      <div class="grid-btns">
+        <button data-action="toggle-hide" id="hide">Hide cat</button>
+        <button data-action="quit">Quit Pixel Cat</button>
+      </div>
+    </section>
+  </main>
+  <div class="welcome" id="welcome">
+    <div class="box">
+      <h2>Name your cat</h2>
+      <div class="hint">It shows when you hover over the cat. You can change it later in settings.</div>
+      <input id="welcome-name" type="text" maxlength="14" placeholder="e.g. MOCHI" autofocus>
+      <button id="welcome-go">Start</button>
+    </div>
+  </div>
+  <script src="settings.js"></script>
+</body>
+</html>
